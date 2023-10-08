@@ -21,25 +21,38 @@ void my_callback(u_char *args, const struct pcap_pkthdr* pkthdr, const u_char*
 }
 
 void another_callback(u_char *arg, const struct pcap_pkthdr* pkthdr, 
-        const u_char* packet, const struct sniff_ip *ip) 
+        const u_char* packet) 
 { 
     int i=0; 
     static int count=0;
+    const struct sniff_ip *ip;
+    
+    /* declare pointers to packet headers */
+    const struct sniff_ethernet *ethernet;  /* The ethernet header [1] */
+    const struct sniff_ip *ip;              /* The IP header */
+    const struct sniff_tcp *tcp;            /* The TCP header */
+    const char *payload;                    /* Packet payload */
 
-    /*time_t nowtime;
-    struct tm *nowtm;
-    char tmbuf[64], buf[64];
+    int size_ip;
+    int size_tcp;
+    int size_payload;
+    
+    /* define ethernet header */
+    ethernet = (struct sniff_ethernet*)(packet);
+    
+    /* define/compute ip header offset */
+    ip = (struct sniff_ip*)(packet + SIZE_ETHERNET);
+    size_ip = IP_HL(ip)*4;
+    if (size_ip < 20) {
+        printf("   * Invalid IP header length: %u bytes\n", size_ip);
+        return;
+    }
 
-    gettimeofday(&pkthdr->ts, NULL);
-    nowtime = pkthdr->ts.tv_sec;
-    nowtm = localtime(&nowtime);
-    strftime(tmbuf, sizeof tmbuf, "%Y-%m-%d %H:%M:%S", nowtm);
-    snprintf(buf, sizeof buf, "%s.%06ld", tmbuf, pkthdr->ts.tv_usec);
-    */
- 
-    //printf("Packet Count: %d\n", ++count);    /* Number of Packets */
-    //printf("Recieved Packet Size: %d\n", pkthdr->len);    /* Length of header */
-    printf("<%ld.%6ld> src: %s det:  LenWire:%d \n", pkthdr->ts.tv_sec, pkthdr->ts.tv_usec, ip->ip_src, pkthdr->len);    /* Length of header */
+    /* print source and destination IP addresses */
+    printf("       From: %s\n", inet_ntoa(ip->ip_src));
+    printf("         To: %s\n", inet_ntoa(ip->ip_dst));
+
+    //printf("<%ld.%6ld> src: %s det:  LenWire:%d \n", pkthdr->ts.tv_sec, pkthdr->ts.tv_usec, ip->ip_src, pkthdr->len);    /* Length of header */
 }
 
 
