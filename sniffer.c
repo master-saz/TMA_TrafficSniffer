@@ -21,11 +21,12 @@ void my_callback(u_char *args, const struct pcap_pkthdr* pkthdr, const u_char*
 }
 
 void another_callback(u_char *arg, const struct pcap_pkthdr* pkthdr, 
-        const u_char* packet) 
+        const u_char* packet, const struct sniff_ip *ip) 
 { 
     int i=0; 
-    static int count=0; 
-    time_t nowtime;
+    static int count=0;
+
+    /*time_t nowtime;
     struct tm *nowtm;
     char tmbuf[64], buf[64];
 
@@ -33,12 +34,12 @@ void another_callback(u_char *arg, const struct pcap_pkthdr* pkthdr,
     nowtime = pkthdr->ts.tv_sec;
     nowtm = localtime(&nowtime);
     strftime(tmbuf, sizeof tmbuf, "%Y-%m-%d %H:%M:%S", nowtm);
-    //snprintf(buf, sizeof buf, "%s.%06ld", tmbuf, pkthdr->ts.tv_usec);
-    printf("%s.%06ld \n", tmbuf, pkthdr->ts.tv_usec);
+    snprintf(buf, sizeof buf, "%s.%06ld", tmbuf, pkthdr->ts.tv_usec);
+    */
  
     //printf("Packet Count: %d\n", ++count);    /* Number of Packets */
     //printf("Recieved Packet Size: %d\n", pkthdr->len);    /* Length of header */
-    //printf("<%ld.%6ld> LenWire:%d \n", pkthdr->ts.tv_sec, pkthdr->ts.tv_usec, pkthdr->len);    /* Length of header */
+    printf("<%ld.%6ld> src: %s det:  LenWire:%d \n", pkthdr->ts.tv_sec, pkthdr->ts.tv_usec, ip->ip_src.s_addr, pkthdr->len);    /* Length of header */
 }
 
 
