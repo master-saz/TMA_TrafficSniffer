@@ -28,7 +28,7 @@ void another_callback(u_char *arg, const struct pcap_pkthdr* pkthdr,
  
     //printf("Packet Count: %d\n", ++count);    /* Number of Packets */
     //printf("Recieved Packet Size: %d\n", pkthdr->len);    /* Length of header */
-    printf("%ld.%6ld LenWire:%d", pkthdr->ts, pkthdr->len);    /* Length of header */
+    printf("<%ld.%6ld> LenWire:%d \n", pkthdr->ts.tv_sec, pkthdr->ts.tv_usec, pkthdr->len);    /* Length of header */
 }
 
 
