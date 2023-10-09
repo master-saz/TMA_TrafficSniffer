@@ -12,7 +12,7 @@ pcap_t* handle;
 int linkhdrlen;
 int packets;
 
-pcap_t* create_pcap_handle(char* device, char* filter)
+pcap_t* create_handle(char* device, char* filter)
 {
     char errbuf[PCAP_ERRBUF_SIZE];
     pcap_t *handle = NULL;
@@ -91,7 +91,7 @@ void get_link_header_len(pcap_t* handle)
     }
 }
 
-void packet_handler(u_char *user, const struct pcap_pkthdr *packethdr, const u_char *packetptr)
+void print_packets(u_char *user, const struct pcap_pkthdr *packethdr, const u_char *packetptr)
 {
     struct ip* iphdr;
     struct icmp* icmphdr;
@@ -144,7 +144,6 @@ int main(int argc, char *argv[])
     int opt;
 
     *device = 0;
-    //*filter = "port 443"; /* The filter expression */
     char filter_exp[] = "dst port 443 or dst port 80";  /* The filter expression */
 
     // Get the command line options, if any
@@ -165,18 +164,8 @@ int main(int argc, char *argv[])
         }
     }
     
-    /*
-    // Get the packet capture filter expression, if any.
-    for (int i = optind; i < argc; i++) {
-        strcat(filter, argv[i]);
-        strcat(filter, " ");
-    }
-    */
-    
-    
     // Create packet capture handle & Compile and set filter
-
-    handle = create_pcap_handle(device, filter_exp); //filter
+    handle = create_handle(device, filter_exp); //filter
     if (handle == NULL) {
         return -1;
     }
@@ -188,7 +177,7 @@ int main(int argc, char *argv[])
     }
 
     // Start the packet capture with a set count or continually if the count is 0.
-    if (pcap_loop(handle, count, packet_handler, (u_char*)NULL) == PCAP_ERROR) {
+    if (pcap_loop(handle, count, print_packets, (u_char*)NULL) == PCAP_ERROR) {
         fprintf(stderr, "pcap_loop failed: %s\n", pcap_geterr(handle));
         return -1;
     }
