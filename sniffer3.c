@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
 
     *device = 0;
     //*filter = "port 443"; /* The filter expression */
-    char filter_exp[] = "port 443";  /* The filter expression */
+    char filter_exp[] = "dst port 443 or dst port 80";  /* The filter expression */
 
     // Get the command line options, if any
     while ((opt = getopt(argc, argv, "hi:n:")) != -1)
