@@ -6,6 +6,9 @@
 #include <netinet/in.h> 
 #include <arpa/inet.h> 
 #include <netinet/if_ether.h>
+#include <string.h>
+#include <unistd.h>
+#include <signal.h>
 
 int linkhdrlen;
 
