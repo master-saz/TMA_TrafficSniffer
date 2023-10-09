@@ -7,6 +7,7 @@
 #include <arpa/inet.h> 
 #include <netinet/if_ether.h>
 
+int linkhdrlen;
 
 /*
 The callback function processes captured packets.
@@ -21,32 +22,47 @@ void my_callback(u_char *args, const struct pcap_pkthdr* pkthdr, const u_char*
     count++; 
 }
 
+void get_link_header_len(pcap_t* handle)
+{
+    int linktype;
+ 
+    // Determine the datalink layer type.
+    if ((linktype = pcap_datalink(handle)) == PCAP_ERROR) {
+        printf("pcap_datalink(): %s\n", pcap_geterr(handle));
+        return;
+    }
+ 
+    // Set the datalink layer header size.
+    switch (linktype)
+    {
+    case DLT_NULL:
+        linkhdrlen = 4;
+        break;
+ 
+    case DLT_EN10MB:
+        linkhdrlen = 14;
+        break;
+ 
+    case DLT_SLIP:
+    case DLT_PPP:
+        linkhdrlen = 24;
+        break;
+ 
+    default:
+        printf("Unsupported datalink (%d)\n", linktype);
+        linkhdrlen = 0;
+    }
+}
+
 void another_callback(u_char *arg, const struct pcap_pkthdr* pkthdr, 
-        const u_char* packet) 
+        const u_char* packet, const u_char *packetptr) 
 { 
     int i=0; 
     static int count=0;
-    
-    /* declare pointers to packet headers */
-    const struct sniff_ethernet *ethernet;  /* The ethernet header [1] */
-    const struct sniff_ip *ip;              /* The IP header */
-    const struct sniff_tcp *tcp;            /* The TCP header */
-    const char *payload;                    /* Packet payload */
+    struct ip* iphdr;
 
-    int size_ip;
-    int size_tcp;
-    int size_payload;
-    
-    /* define ethernet header */
-    ethernet = (struct sniff_ethernet*)(packet);
-    
-    /* define/compute ip header offset */
-    ip = (struct sniff_ip*)(packet + SIZE_ETHERNET);
-    size_ip = IP_HL(ip)*4;
-    if (size_ip < 20) {
-        printf("   * Invalid IP header length: %u bytes\n", size_ip);
-        return;
-    }
+    packetptr += linkhdrlen;
+    iphdr = (struct ip*)packetptr;
 
     /* print source and destination IP addresses */
     printf("       From: %s\n", inet_ntoa(ip->ip_src));
@@ -102,7 +118,14 @@ int main(int argc,char **argv)
     if(pcap_setfilter(descr, &fp) == -1) {
         fprintf(stderr, "Error setting filter\n");
         exit(1);
-    } 
+    }
+
+
+    // Get the type of link layer.
+    get_link_header_len(descr);
+    if (linkhdrlen == 0) {
+        return -1;
+    }
  
     /* loop for callback function */
     pcap_loop(descr, -1, another_callback, NULL); 
