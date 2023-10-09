@@ -45,13 +45,13 @@ pcap_t* create_pcap_handle(char* device, char* filter)
 
     // Compile and set filter
     // Convert the packet filter epxression into a packet filter binary.
-    if (pcap_compile(handle, &bpf, filter, 1, netmask) == PCAP_ERROR) {
+    if (pcap_compile(handle, &bpf, filter, 0, netmask) == -1) {
         fprintf(stderr, "pcap_compile(): %s\n", pcap_geterr(handle));
         return NULL;
     }
 
     // Bind the packet filter to the libpcap handle.    
-    if (pcap_setfilter(handle, &bpf) == PCAP_ERROR) {
+    if (pcap_setfilter(handle, &bpf) == -1) {
         fprintf(stderr, "pcap_setfilter(): %s\n", pcap_geterr(handle));
         return NULL;
     }
