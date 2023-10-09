@@ -65,8 +65,8 @@ void another_callback(u_char *arg, const struct pcap_pkthdr* pkthdr,
     iphdr = (struct ip*)packetptr;
 
     /* print source and destination IP addresses */
-    printf("       From: %s\n", inet_ntoa(ip->ip_src));
-    printf("         To: %s\n", inet_ntoa(ip->ip_dst));
+    printf("       From: %s\n", inet_ntoa(iphdr->ip_src));
+    printf("         To: %s\n", inet_ntoa(iphdr->ip_dst));
 
     //printf("<%ld.%6ld> src: %s det:  LenWire:%d \n", pkthdr->ts.tv_sec, pkthdr->ts.tv_usec, ip->ip_src, pkthdr->len);    /* Length of header */
 }
