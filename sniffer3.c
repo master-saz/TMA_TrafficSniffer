@@ -17,9 +17,9 @@ pcap_t* create_pcap_handle(char* device, char* filter)
     char errbuf[PCAP_ERRBUF_SIZE];
     pcap_t *handle = NULL;
     pcap_if_t* devices = NULL;
-    struct bpf_program bpf;
     bpf_u_int32 netmask;
     bpf_u_int32 srcip;
+    struct bpf_program bpf; /* The compiled filter expression */
 
     // If no network interface (device) is specfied, get the first one.
     if (!*device) {
@@ -43,6 +43,7 @@ pcap_t* create_pcap_handle(char* device, char* filter)
         return NULL;
     }
 
+    // Compile and set filter
     // Convert the packet filter epxression into a packet filter binary.
     if (pcap_compile(handle, &bpf, filter, 1, netmask) == PCAP_ERROR) {
         fprintf(stderr, "pcap_compile(): %s\n", pcap_geterr(handle));
@@ -138,12 +139,13 @@ void packet_handler(u_char *user, const struct pcap_pkthdr *packethdr, const u_c
 int main(int argc, char *argv[])
 {
     char device[256];
-    char filter[256]; 
+    //char filter[256]; 
     int count = 0;
     int opt;
 
     *device = 0;
-    *filter = 0;
+    //*filter = "port 443"; /* The filter expression */
+    char filter_exp[] = "port 443";  /* The filter expression */
 
     // Get the command line options, if any
     while ((opt = getopt(argc, argv, "hi:n:")) != -1)
@@ -162,15 +164,19 @@ int main(int argc, char *argv[])
             break;
         }
     }
-
+    
+    /*
     // Get the packet capture filter expression, if any.
     for (int i = optind; i < argc; i++) {
         strcat(filter, argv[i]);
         strcat(filter, " ");
     }
+    */
     
-    // Create packet capture handle.
-    handle = create_pcap_handle(device, filter);
+    
+    // Create packet capture handle & Compile and set filter
+
+    handle = create_pcap_handle(device, filter_exp); //filter
     if (handle == NULL) {
         return -1;
     }
