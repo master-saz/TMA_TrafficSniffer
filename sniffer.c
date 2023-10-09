@@ -7,6 +7,7 @@
 #include <arpa/inet.h> 
 #include <netinet/if_ether.h>
 
+
 /*
 The callback function processes captured packets.
 This function just prints out a running count of packets, as captured.
@@ -25,7 +26,6 @@ void another_callback(u_char *arg, const struct pcap_pkthdr* pkthdr,
 { 
     int i=0; 
     static int count=0;
-    const struct sniff_ip *ip;
     
     /* declare pointers to packet headers */
     const struct sniff_ethernet *ethernet;  /* The ethernet header [1] */
