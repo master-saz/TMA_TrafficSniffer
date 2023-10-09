@@ -112,24 +112,24 @@ void packet_handler(u_char *user, const struct pcap_pkthdr *packethdr, const u_c
     {
     case IPPROTO_TCP:
         tcphdr = (struct tcphdr*)packetptr;
-        printf("TCP  %s:%d -> %s:%d\n", srcip, ntohs(tcphdr->th_sport),
-               dstip, ntohs(tcphdr->th_dport));
-        printf("------------------------------\n\n");
+        printf("<%ld.%6ld> TCP src: %s:%d -> dst: %s:%d     LenWire:%d\n  ", packethdr->ts.tv_sec, packethdr->ts.tv_usec, srcip, ntohs(tcphdr->th_sport),
+               dstip, ntohs(tcphdr->th_dport), packethdr->len);
+        printf("--------------------------------------------------\n\n");
         packets += 1;
         break;
  
     case IPPROTO_UDP:
         udphdr = (struct udphdr*)packetptr;
-        printf("UDP  %s:%d -> %s:%d\n", srcip, ntohs(udphdr->uh_sport),
-               dstip, ntohs(udphdr->uh_dport));
-	    printf("------------------------------\n\n");
+        printf("<%ld.%6ld> UDP src: %s:%d -> dst: %s:%d     LenWire:%d\n", packethdr->ts.tv_sec, packethdr->ts.tv_usec, srcip, ntohs(udphdr->uh_sport),
+               dstip, ntohs(udphdr->uh_dport), packethdr->len);
+	    printf("--------------------------------------------------\n\n");
         packets += 1;
         break;
  
     case IPPROTO_ICMP:
         icmphdr = (struct icmp*)packetptr;
-        printf("ICMP %s -> %s\n", srcip, dstip);
-	    printf("------------------------------\n\n");
+        printf("<%ld.%6ld> ICMP src: %s -> dst: %s      LenWire:%d\n", packethdr->ts.tv_sec, packethdr->ts.tv_usec, srcip, dstip, packethdr->len);
+	    printf("--------------------------------------------------\n\n");
         packets += 1;
         break;
     }
