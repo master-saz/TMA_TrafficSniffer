@@ -77,8 +77,7 @@ void print_packets(u_char *user, const struct pcap_pkthdr *packethdr, const u_ch
     switch (iphdr->ip_p){
         case IPPROTO_TCP:
             tcphdr = (struct tcphdr*)packetptr;
-            printf("--------------------------------------------------\n\n");
-            printf("<%04d-%02d-%02d %02d:%02d:%02d> from: %s:%d to: %s:%d     LenWire:%d\n",
+            printf("<%04d-%02d-%02d %02d:%02d:%02d> from: %s:%d to: %s:%d     LenWire:%d\n\n",
             tm->tm_year+1900, tm->tm_mon+1, tm->tm_mday,
             tm->tm_hour, tm->tm_min, tm->tm_sec, src_ip, ntohs(tcphdr->th_sport),
                 dst_ip, ntohs(tcphdr->th_dport), packethdr->len);
@@ -88,8 +87,7 @@ void print_packets(u_char *user, const struct pcap_pkthdr *packethdr, const u_ch
     
         case IPPROTO_UDP:
             udphdr = (struct udphdr*)packetptr;
-            printf("--------------------------------------------------\n\n");
-            printf("<%04d-%02d-%02d %02d:%02d:%02d> from: %s:%d to: %s:%d     LenWire:%d\n",
+            printf("<%04d-%02d-%02d %02d:%02d:%02d> from: %s:%d to: %s:%d     LenWire:%d\n\n",
             tm->tm_year+1900, tm->tm_mon+1, tm->tm_mday,
             tm->tm_hour, tm->tm_min, tm->tm_sec, src_ip, ntohs(udphdr->uh_sport),
                 dst_ip, ntohs(udphdr->uh_dport), packethdr->len);
@@ -99,8 +97,7 @@ void print_packets(u_char *user, const struct pcap_pkthdr *packethdr, const u_ch
     
         case IPPROTO_ICMP:
             icmphdr = (struct icmp*)packetptr;
-            printf("--------------------------------------------------\n\n");
-            printf("<%04d-%02d-%02d %02d:%02d:%02d> from: %s:%d to: %s:%d     LenWire:%d\n",
+            printf("<%04d-%02d-%02d %02d:%02d:%02d> from: %s:%d to: %s:%d     LenWire:%d\n\n",
             tm->tm_year+1900, tm->tm_mon+1, tm->tm_mday,
             tm->tm_hour, tm->tm_min, tm->tm_sec,  src_ip, dst_ip, packethdr->len);
             printf("--------------------------------------------------\n\n");
