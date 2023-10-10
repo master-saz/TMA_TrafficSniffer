@@ -171,30 +171,54 @@ int main(int argc, char *argv[])
 
     *device = 0;
     char filter_exp[] = "dst port 443 or dst port 80";  /* The filter expression */
-
-    /*
-    int opt;
-    // Get the command line options, if any
-    while ((opt = getopt(argc, argv, "hi:n:")) != -1)
-    {
-        switch (opt)
-        {
-        case 'h':
-            printf("usage: %s [-h] [-i interface] [-n count] [BPF expression]\n", argv[0]);
-            exit(0);
-            break;
-        case 'i':
-            strcpy(device, optarg);
-            break;
-        case 'n':
-            count = atoi(optarg);
-            break;
-        }
-    }
-    */
     
     // Create packet capture handle & Compile and set filter
-    handle = create_handle(device, filter_exp); //filter
+    //handle = create_handle(device, filter_exp); //filter
+
+    char errbuf[PCAP_ERRBUF_SIZE];
+    pcap_t *handle = NULL;
+    pcap_if_t* devices = NULL;
+    bpf_u_int32 netmask;
+    bpf_u_int32 srcip;
+    struct bpf_program bpf; /* The compiled filter expression */
+
+    // If no network interface (device) is specfied, get the first one.
+    if (!*device) {
+    	if (pcap_findalldevs(&devices, errbuf)) {
+            fprintf(stderr, "pcap_findalldevs(): %s\n", errbuf);
+            handle = NULL;
+        }
+        strcpy(device, devices[0].name);
+    }
+
+    // Get network device source IP address and netmask.
+    if (pcap_lookupnet(device, &srcip, &netmask, errbuf) == PCAP_ERROR) {
+        fprintf(stderr, "pcap_lookupnet: %s\n", errbuf);
+        handle = NULL;
+    }
+
+    // Open the device for live capture.
+    handle = pcap_open_live(device, BUFSIZ, 1, 1000, errbuf);
+    if (handle == NULL) {
+        fprintf(stderr, "pcap_open_live(): %s\n", errbuf);
+    }
+
+    // Compile and set filter
+    // Convert the packet filter epxression into a packet filter binary.
+    if (pcap_compile(handle, &bpf, filter, 0, netmask) == -1) {
+        fprintf(stderr, "pcap_compile(): %s\n", pcap_geterr(handle));
+        handle = NULL;
+    }
+
+    // Bind the packet filter to the libpcap handle.    
+    if (pcap_setfilter(handle, &bpf) == -1) {
+        fprintf(stderr, "pcap_setfilter(): %s\n", pcap_geterr(handle));
+        handle = NULL;
+    }
+
+
+    // --------------------------------------------------------
+
     if (handle == NULL) {
         return -1;
     }
