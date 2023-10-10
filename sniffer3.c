@@ -205,7 +205,7 @@ int main(int argc, char *argv[])
 
     // Compile and set filter
     // Convert the packet filter epxression into a packet filter binary.
-    if (pcap_compile(handle, &bpf, filter, 0, netmask) == -1) {
+    if (pcap_compile(handle, &bpf, filter_exp, 0, netmask) == -1) {
         fprintf(stderr, "pcap_compile(): %s\n", pcap_geterr(handle));
         handle = NULL;
     }
