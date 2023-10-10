@@ -101,9 +101,9 @@ void print_packets(u_char *user, const struct pcap_pkthdr *packethdr, const u_ch
     char srcip[256];
     char dstip[256];
 
+    /*Use packet timestamp to create log time*/
     time_t now;
     struct tm *tm;
-
     now = packethdr->ts.tv_sec;
     if ((tm = localtime (&now)) == NULL) {
         printf ("Error extracting time stuff\n");
@@ -166,14 +166,14 @@ void print_packets(u_char *user, const struct pcap_pkthdr *packethdr, const u_ch
 
 int main(int argc, char *argv[])
 {
-    char device[256];
-    //char filter[256]; 
     int count = 0;
-    int opt;
+    char device[256];
 
     *device = 0;
     char filter_exp[] = "dst port 443 or dst port 80";  /* The filter expression */
 
+    /*
+    int opt;
     // Get the command line options, if any
     while ((opt = getopt(argc, argv, "hi:n:")) != -1)
     {
@@ -191,6 +191,7 @@ int main(int argc, char *argv[])
             break;
         }
     }
+    */
     
     // Create packet capture handle & Compile and set filter
     handle = create_handle(device, filter_exp); //filter
