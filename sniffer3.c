@@ -100,19 +100,14 @@ void print_packets(u_char *user, const struct pcap_pkthdr *packethdr, const u_ch
     struct udphdr* udphdr;
     char srcip[256];
     char dstip[256];
-    
+
     time_t now;
     struct tm *tm;
 
     now = packethdr->ts.tv_sec;
     if ((tm = localtime (&now)) == NULL) {
         printf ("Error extracting time stuff\n");
-        return 1;
     }
-
-    printf ("%04d-%02d-%02d %02d:%02d:%02d\n",
-        tm->tm_year+1900, tm->tm_mon+1, tm->tm_mday,
-        tm->tm_hour, tm->tm_min, tm->tm_sec);
  
     // Skip the datalink layer header and get the IP header fields.
     packetptr += linkhdrlen;
@@ -127,7 +122,14 @@ void print_packets(u_char *user, const struct pcap_pkthdr *packethdr, const u_ch
     {
     case IPPROTO_TCP:
         tcphdr = (struct tcphdr*)packetptr;
-        printf("<%ld.%6ld> from: %s:%d to: %s:%d     LenWire:%d\n  ", packethdr->ts.tv_sec, packethdr->ts.tv_usec, srcip, ntohs(tcphdr->th_sport),
+        /*
+        printf(" from: %s:%d to: %s:%d     LenWire:%d\n  ", srcip, ntohs(tcphdr->th_sport),
+               dstip, ntohs(tcphdr->th_dport), packethdr->len);
+        */
+
+        printf("<%04d-%02d-%02d %02d:%02d:%02d> from: %s:%d to: %s:%d     LenWire:%d\n",
+        tm->tm_year+1900, tm->tm_mon+1, tm->tm_mday,
+        tm->tm_hour, tm->tm_min, tm->tm_sec, srcip, ntohs(tcphdr->th_sport),
                dstip, ntohs(tcphdr->th_dport), packethdr->len);
         printf("--------------------------------------------------\n\n");
         packets += 1;
@@ -135,7 +137,14 @@ void print_packets(u_char *user, const struct pcap_pkthdr *packethdr, const u_ch
  
     case IPPROTO_UDP:
         udphdr = (struct udphdr*)packetptr;
+        /*
         printf("<%ld.%6ld> from: %s:%d to: %s:%d     LenWire:%d\n", packethdr->ts.tv_sec, packethdr->ts.tv_usec, srcip, ntohs(udphdr->uh_sport),
+               dstip, ntohs(udphdr->uh_dport), packethdr->len);
+        */
+
+        printf("<%04d-%02d-%02d %02d:%02d:%02d> from: %s:%d to: %s:%d     LenWire:%d\n",
+        tm->tm_year+1900, tm->tm_mon+1, tm->tm_mday,
+        tm->tm_hour, tm->tm_min, tm->tm_sec, srcip, ntohs(udphdr->uh_sport),
                dstip, ntohs(udphdr->uh_dport), packethdr->len);
 	    printf("--------------------------------------------------\n\n");
         packets += 1;
@@ -143,8 +152,13 @@ void print_packets(u_char *user, const struct pcap_pkthdr *packethdr, const u_ch
  
     case IPPROTO_ICMP:
         icmphdr = (struct icmp*)packetptr;
+        /*
         printf("<%ld.%6ld> from: %s to: %s      LenWire:%d\n", packethdr->ts.tv_sec, packethdr->ts.tv_usec, srcip, dstip, packethdr->len);
-	    printf("--------------------------------------------------\n\n");
+        */
+        printf("<%04d-%02d-%02d %02d:%02d:%02d> from: %s:%d to: %s:%d     LenWire:%d\n",
+        tm->tm_year+1900, tm->tm_mon+1, tm->tm_mday,
+        tm->tm_hour, tm->tm_min, tm->tm_sec,  srcip, dstip, packethdr->len);
+        printf("--------------------------------------------------\n\n");
         packets += 1;
         break;
     }
