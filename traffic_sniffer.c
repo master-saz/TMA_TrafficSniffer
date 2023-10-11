@@ -136,7 +136,7 @@ int main(int argc, char *argv[]){
 
     // Create the packet capture handle
     // Open device for live capture.
-    handle = pcap_open_live(device, BUFSIZ, 1, 1000, errbuf);
+    handle = pcap_open_live(device, 120, 1, 1000, errbuf);
     if (handle == NULL) {
         fprintf(stderr, "pcap_open_live(): %s\n", errbuf);
     }
